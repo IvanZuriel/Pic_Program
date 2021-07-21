@@ -1,0 +1,51 @@
+#include <xc.inc>
+#include "pic16f84a.inc"
+    
+    config FOSC=XT	;creacion
+    
+    config WDTE=OFF	;deshabilitamos el watchdog
+    
+    config PWRTE=OFF	; deshabilitamos la propiedad power up
+    
+    config CP=OFF	;desabilitamos el codigo de proteccion
+    estado EQU 0x03   ;Definimos una variable de tipo estado (verd data sheet)
+    //puertoB EQU 0x06  ;Definimos la variable puertoB (ver data seet)
+    contadorA EQU 0CH  ;Definimos la variable contadorA para generar un retardoi de 1ms
+    contadorB EQU 0DH  ;Definimos la variable contadorA para generar un retardoi de 1ms
+    contadorC EQU 0EH
+ 
+    CONT EQU 0FH
+    PSECT Code, class=CODE, delta=2  ;inidcamos donde inicia la programacion
+    PSECT Code
+ 
+ inicio:
+    BCF estado, 6
+    BSF estado, 5
+    MOVLW 0xFE	    ;creacion
+    MOVWF TRISB	    ;creacion
+    BCF estado,6
+    BCF estado,5
+ principal:
+    BSF PORTB, 0
+    CALL Retardo_1s
+    BCF PORTB, 0
+    CALL Retardo_1s
+    GOTO principal
+    
+Retardo_1s:
+    MOVLW 3
+    MOVWF contadorC
+    MOVLW 12
+    MOVWF contadorB
+    MOVLW 84
+    MOVWF contadorA
+
+loop:
+    DECFSZ contadorA,1
+    GOTO loop
+    DECFSZ contadorB,1
+    GOTO loop
+    DECFSZ contadorC,1
+    GOTO loop
+    return
+END
